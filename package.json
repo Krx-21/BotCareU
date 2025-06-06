@@ -1,0 +1,73 @@
+{
+  "name": "botcareu",
+  "version": "1.0.0-alpha",
+  "description": "IoT Health Monitoring System with medical-grade temperature measurement",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run backend:dev\" \"npm run frontend:dev\"",
+    "backend:dev": "cd backend && npm run dev",
+    "frontend:dev": "cd frontend/web && npm run dev",
+    "mobile:dev": "cd frontend/mobile && npm run start",
+    "build": "npm run backend:build && npm run frontend:build",
+    "backend:build": "cd backend && npm run build",
+    "frontend:build": "cd frontend/web && npm run build",
+    "test": "npm run backend:test && npm run frontend:test",
+    "backend:test": "cd backend && npm test",
+    "frontend:test": "cd frontend/web && npm test",
+    "mobile:test": "cd frontend/mobile && npm test",
+    "docker:dev": "docker-compose -f docker-compose.dev.yml up -d",
+    "docker:prod": "docker-compose -f docker-compose.prod.yml up -d",
+    "docker:down": "docker-compose down",
+    "setup": "npm run setup:backend && npm run setup:frontend && npm run setup:mobile",
+    "setup:backend": "cd backend && npm install",
+    "setup:frontend": "cd frontend/web && npm install",
+    "setup:mobile": "cd frontend/mobile && npm install",
+    "lint": "npm run backend:lint && npm run frontend:lint",
+    "backend:lint": "cd backend && npm run lint",
+    "frontend:lint": "cd frontend/web && npm run lint",
+    "format": "npm run backend:format && npm run frontend:format",
+    "backend:format": "cd backend && npm run format",
+    "frontend:format": "cd frontend/web && npm run format"
+  },
+  "keywords": [
+    "iot",
+    "health-monitoring",
+    "temperature-sensor",
+    "medical-device",
+    "esp32",
+    "react",
+    "nodejs",
+    "mqtt",
+    "websocket",
+    "hipaa-compliant"
+  ],
+  "author": "Kritchaya Chaowajreun <6733007821@student.chula.ac.th>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Krx-21/BotCareU.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Krx-21/BotCareU/issues"
+  },
+  "homepage": "https://github.com/Krx-21/BotCareU#readme",
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "husky": "^8.0.3",
+    "lint-staged": "^15.2.0"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,yml,yaml}": [
+      "prettier --write"
+    ]
+  }
+}

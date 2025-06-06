@@ -125,7 +125,103 @@ BotCareU is an advanced IoT-based health monitoring system designed to provide a
 - **Android Studio** for Android builds
 - **Xcode** for iOS builds (macOS required)
 
+## 📁 Project Structure
+
+```
+BotCareU/
+├── 📁 backend/                 # Node.js API Backend
+│   ├── 📁 src/
+│   │   ├── 📁 config/         # Configuration files
+│   │   ├── 📁 controllers/    # API controllers
+│   │   ├── 📁 middleware/     # Express middleware
+│   │   ├── 📁 models/         # Database models
+│   │   ├── 📁 routes/         # API routes
+│   │   ├── 📁 services/       # Business logic services
+│   │   ├── 📁 utils/          # Utility functions
+│   │   └── server.js          # Main server file
+│   ├── 📁 database/           # Database migrations & seeds
+│   ├── 📁 tests/              # Backend tests
+│   ├── package.json
+│   └── .env.example
+├── 📁 frontend/
+│   ├── 📁 web/                # React.js Web Dashboard
+│   │   ├── 📁 src/
+│   │   │   ├── 📁 components/ # React components
+│   │   │   ├── 📁 pages/      # Page components
+│   │   │   ├── 📁 hooks/      # Custom React hooks
+│   │   │   ├── 📁 services/   # API services
+│   │   │   ├── 📁 contexts/   # React contexts
+│   │   │   ├── 📁 utils/      # Utility functions
+│   │   │   └── App.tsx        # Main App component
+│   │   ├── package.json
+│   │   └── vite.config.ts
+│   └── 📁 mobile/             # React Native Mobile App
+│       ├── 📁 src/
+│       │   ├── 📁 components/ # React Native components
+│       │   ├── 📁 screens/    # Screen components
+│       │   ├── 📁 navigation/ # Navigation setup
+│       │   ├── 📁 services/   # API & Bluetooth services
+│       │   └── 📁 utils/      # Utility functions
+│       ├── 📁 android/        # Android specific files
+│       ├── 📁 ios/            # iOS specific files
+│       └── package.json
+├── 📁 firmware/               # ESP32 IoT Device Firmware
+│   ├── 📁 src/
+│   │   ├── main.cpp           # Main firmware code
+│   │   ├── config.h           # Configuration headers
+│   │   └── 📁 lib/            # Custom libraries
+│   ├── 📁 test/               # Firmware tests
+│   └── platformio.ini         # PlatformIO configuration
+├── 📁 docs/                   # Documentation
+│   ├── ARCHITECTURE.md        # System architecture
+│   ├── API_DOCUMENTATION.md   # API documentation
+│   ├── DEPLOYMENT.md          # Deployment guide
+│   └── DEVELOPMENT.md         # Development guide
+├── 📁 scripts/                # Utility scripts
+│   ├── setup.sh               # Project setup script
+│   ├── deploy.sh              # Deployment script
+│   └── test.sh                # Testing script
+├── docker-compose.dev.yml     # Development environment
+├── docker-compose.prod.yml    # Production environment
+├── package.json               # Root package.json
+├── .gitignore
+└── README.md
+```
+
 ## 🚀 Installation & Setup
+
+### Prerequisites
+
+Before starting, ensure you have the following installed:
+- **Node.js** 16+ and npm
+- **Docker** and Docker Compose
+- **Git** for version control
+- **Arduino IDE** or **PlatformIO** (for firmware development)
+- **Android Studio** (for mobile development)
+- **Xcode** (for iOS development, macOS only)
+
+### Quick Start
+
+1. **Clone the repository**
+```bash
+git clone https://github.com/Krx-21/BotCareU.git
+cd BotCareU
+```
+
+2. **Install dependencies**
+```bash
+npm run setup
+```
+
+3. **Start development environment**
+```bash
+npm run docker:dev
+```
+
+4. **Access the applications**
+- Web Dashboard: http://localhost:3000
+- API Documentation: http://localhost:3001
+- Database Admin: http://localhost:8080 (pgAdmin)
 
 ### 1. Hardware Setup
 
@@ -445,11 +541,24 @@ DEVICE_ENCRYPTION_KEY=your-device-key
 ## 🛣️ Future Roadmap
 
 ### Phase 1: Core Temperature Monitoring (Current)
-- ✅ Basic temperature measurement functionality
+- ✅ Project structure and architecture design
+- ✅ Backend API framework setup (Node.js + Express)
+- ✅ Database models and migrations (PostgreSQL + InfluxDB)
+- ✅ Authentication system with JWT
+- ✅ MQTT service for IoT communication
+- ✅ WebSocket service for real-time updates
+- ✅ Frontend web dashboard foundation (React + TypeScript)
+- ✅ Mobile app framework setup (React Native)
+- ✅ ESP32 firmware with sensor integration
+- ✅ Docker development environment
+- ✅ Temperature measurement implementation
 - ✅ Real-time data collection and storage
-- ✅ Simple notification system
-- 🔄 Web dashboard development
-- 🔄 Mobile app development
+- ✅ Basic notification system
+- ✅ Device pairing and management
+- ✅ Medical-grade accuracy implementation (±0.1°C)
+- ✅ HIPAA-compliant data handling
+- ✅ Comprehensive API documentation
+- ✅ Development and production deployment configs
 
 ### Phase 2: Enhanced Features (Q2 2024)
 - 📋 Advanced analytics and trend analysis

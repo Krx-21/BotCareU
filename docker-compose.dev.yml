@@ -1,0 +1,124 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database for structured data
+  postgres:
+    image: postgres:15-alpine
+    container_name: botcareu-postgres-dev
+    environment:
+      POSTGRES_DB: botcareu_dev
+      POSTGRES_USER: botcareu_user
+      POSTGRES_PASSWORD: botcareu_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/database/init:/docker-entrypoint-initdb.d
+    networks:
+      - botcareu-network
+
+  # InfluxDB for time-series temperature data
+  influxdb:
+    image: influxdb:2.7-alpine
+    container_name: botcareu-influxdb-dev
+    environment:
+      DOCKER_INFLUXDB_INIT_MODE: setup
+      DOCKER_INFLUXDB_INIT_USERNAME: admin
+      DOCKER_INFLUXDB_INIT_PASSWORD: adminpassword
+      DOCKER_INFLUXDB_INIT_ORG: botcareu
+      DOCKER_INFLUXDB_INIT_BUCKET: temperature_data
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: dev-token-please-change-in-production
+    ports:
+      - "8086:8086"
+    volumes:
+      - influxdb_data:/var/lib/influxdb2
+    networks:
+      - botcareu-network
+
+  # Redis for caching and real-time notifications
+  redis:
+    image: redis:7-alpine
+    container_name: botcareu-redis-dev
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - botcareu-network
+
+  # MQTT Broker for IoT device communication
+  mosquitto:
+    image: eclipse-mosquitto:2.0
+    container_name: botcareu-mqtt-dev
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - ./backend/mqtt/mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - mosquitto_data:/mosquitto/data
+      - mosquitto_logs:/mosquitto/log
+    networks:
+      - botcareu-network
+
+  # Backend API Service
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    container_name: botcareu-api-dev
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgresql://botcareu_user:botcareu_password@postgres:5432/botcareu_dev
+      REDIS_URL: redis://redis:6379
+      INFLUXDB_URL: http://influxdb:8086
+      INFLUXDB_TOKEN: dev-token-please-change-in-production
+      INFLUXDB_ORG: botcareu
+      INFLUXDB_BUCKET: temperature_data
+      MQTT_BROKER_URL: mqtt://mosquitto:1883
+      JWT_SECRET: dev-jwt-secret-change-in-production
+      ENCRYPTION_KEY: dev-encryption-key-change-in-production
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    depends_on:
+      - postgres
+      - influxdb
+      - redis
+      - mosquitto
+    networks:
+      - botcareu-network
+    command: npm run dev
+
+  # Frontend Web Dashboard
+  web:
+    build:
+      context: ./frontend/web
+      dockerfile: Dockerfile.dev
+    container_name: botcareu-web-dev
+    environment:
+      REACT_APP_API_URL: http://localhost:3001
+      REACT_APP_WS_URL: ws://localhost:3001
+      REACT_APP_MQTT_WS_URL: ws://localhost:9001
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend/web:/app
+      - /app/node_modules
+    depends_on:
+      - api
+    networks:
+      - botcareu-network
+    command: npm start
+
+volumes:
+  postgres_data:
+  influxdb_data:
+  redis_data:
+  mosquitto_data:
+  mosquitto_logs:
+
+networks:
+  botcareu-network:
+    driver: bridge
