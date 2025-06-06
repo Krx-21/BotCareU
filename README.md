@@ -461,33 +461,510 @@ npm run test:hardware
 - **Mobile**: >80% code coverage
 - **Firmware**: >75% code coverage
 
-## 🚀 Deployment
+## 🔄 CI/CD Pipeline
 
-### Production Deployment
+BotCareU implements a comprehensive CI/CD pipeline designed for medical-grade software development with strict compliance requirements.
 
-#### Using Docker Compose
-```bash
-# Production deployment
-docker-compose -f docker-compose.prod.yml up -d
+### 🏗️ Continuous Integration (CI)
 
-# Scale services
-docker-compose -f docker-compose.prod.yml up -d --scale api=3
+#### Automated Workflows
+Our CI pipeline includes multiple specialized workflows:
+
+- **🔍 Code Quality & Linting** - Ensures code standards and consistency
+- **🧪 Automated Testing** - Comprehensive test suite with medical compliance validation
+- **🔒 Security Scanning** - Vulnerability detection and dependency auditing
+- **🏥 Medical Compliance Checks** - Validates medical-grade requirements (±0.1°C precision)
+- **🏗️ Build Verification** - Docker image builds and deployment readiness
+
+#### Workflow Triggers
+```yaml
+# Triggers for CI workflows
+on:
+  push:
+    branches: [ main, develop, 'feature/*', 'hotfix/*' ]
+  pull_request:
+    branches: [ main, develop ]
+  schedule:
+    - cron: '0 2 * * *'  # Daily security scans
 ```
 
-#### Kubernetes Deployment
+#### Medical-Grade Testing
 ```bash
-# Apply Kubernetes manifests
-kubectl apply -f k8s/
+# Medical precision validation
+npm run test:medical-precision
+npm run test:temperature-accuracy
+npm run test:audit-compliance
+```
 
-# Check deployment status
-kubectl get pods -n botcareu
+### 🚀 Continuous Deployment (CD)
+
+#### Multi-Environment Strategy
+- **Staging Deployment**: Automatic deployment on PR creation
+- **Production Deployment**: Manual approval required for main branch
+- **Rollback Capabilities**: Automated rollback on deployment failure
+
+#### Deployment Environments
+```bash
+# Staging Environment
+Environment: staging.botcareu.com
+API: staging-api.botcareu.com
+Auto-deploy: On PR to main
+
+# Production Environment
+Environment: botcareu.com
+API: api.botcareu.com
+Deploy: Manual approval required
+```
+
+#### Deployment Scripts
+```bash
+# Deploy to staging
+./scripts/deploy.sh staging v1.0.0
+
+# Deploy to production (requires confirmation)
+./scripts/deploy.sh production v1.0.0
+
+# Emergency rollback
+./scripts/rollback.sh production latest true
+```
+
+### 🔒 Security & Compliance
+
+#### Security Scanning
+- **Dependency Vulnerability Scanning**: Daily automated scans
+- **Code Security Analysis**: CodeQL static analysis
+- **Secret Detection**: TruffleHog secret scanning
+- **Docker Image Security**: Trivy container scanning
+
+#### Medical Compliance
+- **HIPAA Compliance**: Data protection and privacy validation
+- **FDA Guidelines**: Software as Medical Device (SaMD) compliance
+- **Audit Trails**: Comprehensive logging for regulatory requirements
+- **Temperature Precision**: ±0.1°C accuracy validation
+
+#### Compliance Workflows
+```yaml
+# Medical compliance validation
+- name: Medical Compliance Check
+  run: |
+    # Validate temperature precision
+    # Check audit logging
+    # Verify data encryption
+    # Confirm HIPAA compliance
+```
+
+### 📦 Dependency Management
+
+#### Automated Updates
+- **Dependabot**: Automated dependency updates with security focus
+- **Weekly Schedules**: Staggered updates to prevent conflicts
+- **Medical-Grade Caution**: Conservative update strategy for critical components
+
+#### Update Strategy
+```yaml
+# Conservative approach for medical software
+ignore:
+  - dependency-name: "*"
+    update-types: ["version-update:semver-major"]
+allow:
+  - dependency-type: "all"
+    update-type: "security"
+```
+
+### 📊 Performance Monitoring
+
+#### Performance Testing
+- **Load Testing**: k6-based performance validation
+- **Medical Precision Testing**: Temperature accuracy under load
+- **Stress Testing**: System behavior under high IoT device load
+- **Dashboard Performance**: Frontend responsiveness validation
+
+#### Performance Thresholds
+```yaml
+# Medical-grade performance requirements
+thresholds:
+  http_req_duration: ['p(95)<500ms']  # API response time
+  http_req_failed: ['rate<0.01']      # Error rate < 1%
+  medical_precision: ['rate>0.99']    # 99%+ precision compliance
+```
+
+### 📚 Documentation Automation
+
+#### Auto-Generated Documentation
+- **API Documentation**: Automatic OpenAPI spec generation
+- **Medical Compliance Docs**: Regulatory requirement documentation
+- **Architecture Diagrams**: System architecture documentation
+- **Deployment Guides**: Environment-specific deployment instructions
+
+#### Documentation Deployment
+```bash
+# Automatic documentation deployment
+GitHub Pages: https://krx-21.github.io/BotCareU/
+API Docs: https://krx-21.github.io/BotCareU/api/
+Compliance: https://krx-21.github.io/BotCareU/compliance/
+```
+
+### 🔔 Notification & Monitoring
+
+#### Deployment Notifications
+- **Slack Integration**: Real-time deployment status
+- **Email Alerts**: Critical deployment failures
+- **GitHub Comments**: PR deployment status updates
+- **Medical Team Alerts**: Production deployment notifications
+
+#### Monitoring Integration
+- **Prometheus**: Metrics collection and alerting
+- **Grafana**: Performance dashboards
+- **Health Checks**: Continuous system health monitoring
+- **Audit Logging**: Comprehensive audit trail maintenance
+
+## 🚀 Deployment
+
+### Medical-Grade Deployment Strategy
+
+BotCareU follows a rigorous deployment strategy designed for medical-grade software with high availability and compliance requirements.
+
+#### Deployment Environments
+
+##### Staging Environment
+```bash
+# Automatic deployment on PR creation
+URL: https://staging.botcareu.com
+API: https://staging-api.botcareu.com
+Database: PostgreSQL (staging)
+Monitoring: Grafana staging dashboard
+
+# Deployment trigger
+- Pull request to main branch
+- Automatic smoke tests
+- Performance validation
+- Medical compliance checks
+```
+
+##### Production Environment
+```bash
+# Manual deployment with approval
+URL: https://botcareu.com
+API: https://api.botcareu.com
+Database: PostgreSQL cluster with replicas
+Monitoring: Full Prometheus + Grafana stack
+
+# Deployment requirements
+- Manual approval required
+- Medical compliance validation
+- Security scan clearance
+- Performance threshold validation
+```
+
+#### Automated Deployment Scripts
+
+##### Deploy Script
+```bash
+# Medical-grade deployment with compliance checks
+./scripts/deploy.sh [environment] [version] [skip_tests] [force_deploy]
+
+# Examples
+./scripts/deploy.sh staging v1.0.0          # Staging deployment
+./scripts/deploy.sh production v1.0.0       # Production deployment
+./scripts/deploy.sh production latest true  # Emergency deployment
+```
+
+##### Rollback Script
+```bash
+# Emergency rollback for medical system
+./scripts/rollback.sh [environment] [backup_id] [force] [skip_verification]
+
+# Examples
+./scripts/rollback.sh production latest              # Standard rollback
+./scripts/rollback.sh production 20231201-143000    # Specific backup
+./scripts/rollback.sh production latest true false  # Emergency rollback
+```
+
+#### Docker-Based Deployment
+
+##### Production Docker Images
+```bash
+# Backend API (Medical-grade Node.js)
+FROM node:18-alpine
+LABEL medical.grade="true"
+LABEL medical.precision="±0.1°C"
+LABEL compliance.hipaa="true"
+
+# Frontend Dashboard (Medical UI)
+FROM nginx:alpine
+LABEL medical.grade="true"
+LABEL compliance.hipaa="true"
+```
+
+##### Multi-Stage Builds
+```bash
+# Optimized production builds
+docker build -f backend/Dockerfile.prod -t botcareu-backend:prod .
+docker build -f frontend/web/Dockerfile.prod -t botcareu-frontend:prod .
+
+# Medical compliance labels
+docker inspect botcareu-backend:prod | grep medical.grade
+```
+
+#### Container Orchestration
+
+##### Docker Compose Production
+```bash
+# Production deployment with health checks
+docker-compose -f docker-compose.prod.yml up -d
+
+# Scale API services for high availability
+docker-compose -f docker-compose.prod.yml up -d --scale api=3
+
+# Monitor service health
+docker-compose -f docker-compose.prod.yml ps
+```
+
+##### Kubernetes Deployment
+```bash
+# Medical-grade Kubernetes deployment
+kubectl apply -f k8s/namespace.yaml
+kubectl apply -f k8s/configmap.yaml
+kubectl apply -f k8s/secrets.yaml
+kubectl apply -f k8s/deployment.yaml
+kubectl apply -f k8s/service.yaml
+kubectl apply -f k8s/ingress.yaml
+
+# Check medical system status
+kubectl get pods -n botcareu-medical
+kubectl logs -f deployment/botcareu-api -n botcareu-medical
 ```
 
 #### Cloud Deployment Options
-- **AWS**: ECS, EKS, or Elastic Beanstalk
-- **Azure**: Container Instances or AKS
-- **Google Cloud**: Cloud Run or GKE
-- **DigitalOcean**: App Platform or Kubernetes
+
+##### AWS Deployment
+```bash
+# ECS with medical compliance
+- ECS Fargate for serverless containers
+- RDS PostgreSQL with encryption
+- ElastiCache Redis for real-time data
+- Application Load Balancer with SSL
+- CloudWatch for medical audit logging
+
+# EKS for Kubernetes
+- Managed Kubernetes service
+- Auto-scaling for IoT device load
+- VPC with private subnets
+- IAM roles for security
+```
+
+##### Azure Deployment
+```bash
+# Azure Container Instances
+- Serverless container deployment
+- Azure Database for PostgreSQL
+- Azure Cache for Redis
+- Application Gateway with WAF
+- Azure Monitor for compliance logging
+
+# AKS for Kubernetes
+- Managed Kubernetes service
+- Azure Active Directory integration
+- Virtual network integration
+- Azure Key Vault for secrets
+```
+
+##### Google Cloud Deployment
+```bash
+# Cloud Run for serverless
+- Fully managed serverless platform
+- Cloud SQL for PostgreSQL
+- Memorystore for Redis
+- Cloud Load Balancing
+- Cloud Logging for audit trails
+
+# GKE for Kubernetes
+- Managed Kubernetes service
+- Workload Identity for security
+- Private GKE clusters
+- Cloud Monitoring integration
+```
+
+#### Medical Compliance Deployment Features
+
+##### Health Checks & Monitoring
+```bash
+# Container health checks
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+    CMD curl -f http://localhost:3001/api/v1/health || exit 1
+
+# Medical system monitoring
+- Temperature precision validation
+- Real-time IoT device connectivity
+- Database integrity checks
+- Audit log verification
+```
+
+##### Security Hardening
+```bash
+# Non-root container execution
+USER botcareu:nodejs
+
+# Security headers for medical data
+add_header X-Medical-Grade "true" always;
+add_header X-Temperature-Precision "±0.1°C" always;
+add_header X-HIPAA-Compliant "true" always;
+
+# Encrypted data transmission
+ssl_protocols TLSv1.2 TLSv1.3;
+ssl_ciphers ECDHE-RSA-AES256-GCM-SHA512:DHE-RSA-AES256-GCM-SHA512;
+```
+
+##### Backup & Recovery
+```bash
+# Automated backup procedures
+- Database backups every 6 hours
+- Configuration backups before deployment
+- Medical data retention (7 years)
+- Point-in-time recovery capability
+
+# Disaster recovery
+- Multi-region deployment
+- Automated failover procedures
+- Data replication across zones
+- Recovery time objective: < 15 minutes
+```
+
+### CI/CD Workflow Reference
+
+#### Available GitHub Actions Workflows
+
+##### 🔄 Continuous Integration (`ci.yml`)
+```bash
+# Triggers: Push to main/develop, PRs, manual dispatch
+# Purpose: Code quality, testing, build verification
+# Features:
+- Code linting and formatting checks
+- Unit and integration testing
+- Medical compliance validation
+- Security vulnerability scanning
+- Docker image build verification
+```
+
+##### 🚀 Staging Deployment (`cd-staging.yml`)
+```bash
+# Triggers: PR to main, manual dispatch
+# Purpose: Automatic staging environment deployment
+# Features:
+- Automated staging deployment
+- Smoke testing and performance validation
+- PR status comments with deployment URLs
+- Environment cleanup on PR closure
+```
+
+##### 🏥 Production Deployment (`cd-production.yml`)
+```bash
+# Triggers: Push to main, manual dispatch with version
+# Purpose: Production deployment with medical compliance
+# Features:
+- Pre-deployment medical compliance checks
+- Blue-green deployment strategy
+- Automated rollback on failure
+- Post-deployment monitoring and validation
+- Medical audit trail generation
+```
+
+##### 🔒 Security Scanning (`security-scan.yml`)
+```bash
+# Triggers: Daily schedule, push to main/develop, PRs
+# Purpose: Comprehensive security analysis
+# Features:
+- Dependency vulnerability scanning
+- CodeQL static analysis
+- Secret detection and validation
+- Docker image security scanning
+- Medical compliance security checks
+```
+
+##### 📦 Dependency Management (`dependency-update.yml`)
+```bash
+# Triggers: Weekly schedule, manual dispatch
+# Purpose: Automated dependency updates
+# Features:
+- Security vulnerability fixes
+- Conservative update strategy for medical software
+- Automated testing after updates
+- Medical compliance validation
+```
+
+##### 📊 Performance Testing (`performance-test.yml`)
+```bash
+# Triggers: Daily schedule, push to main, manual dispatch
+# Purpose: Medical-grade performance validation
+# Features:
+- API performance baseline testing
+- Medical precision performance validation
+- Stress testing for IoT device loads
+- Dashboard performance monitoring
+```
+
+##### 📚 Documentation Deployment (`docs-deploy.yml`)
+```bash
+# Triggers: Changes to docs, README, or source code
+# Purpose: Automated documentation generation and deployment
+# Features:
+- API documentation generation
+- Medical compliance documentation
+- Architecture documentation updates
+- GitHub Pages deployment
+```
+
+#### Workflow Dependencies and Flow
+```mermaid
+graph TD
+    A[Code Push] --> B[CI Workflow]
+    B --> C{Tests Pass?}
+    C -->|Yes| D[Security Scan]
+    C -->|No| E[Block Deployment]
+    D --> F{Security Clear?}
+    F -->|Yes| G[Staging Deployment]
+    F -->|No| E
+    G --> H[Performance Tests]
+    H --> I{Performance OK?}
+    I -->|Yes| J[Ready for Production]
+    I -->|No| K[Performance Alert]
+    J --> L[Manual Production Approval]
+    L --> M[Production Deployment]
+    M --> N[Post-deployment Monitoring]
+    N --> O{Health Checks Pass?}
+    O -->|Yes| P[Deployment Success]
+    O -->|No| Q[Automatic Rollback]
+```
+
+#### Medical Compliance Workflow Features
+
+##### Temperature Precision Validation
+```bash
+# Automated validation of ±0.1°C precision requirement
+- Hardware calibration verification
+- Software precision testing
+- End-to-end accuracy validation
+- Compliance reporting
+```
+
+##### Audit Trail Generation
+```bash
+# Comprehensive audit logging for medical compliance
+- Deployment audit logs (7-year retention)
+- Code change tracking
+- Security scan results
+- Performance test results
+- Medical compliance validation reports
+```
+
+##### HIPAA Compliance Checks
+```bash
+# Automated HIPAA compliance validation
+- Data encryption verification
+- Access control validation
+- Audit logging confirmation
+- Privacy protection checks
+```
 
 ### Environment Configuration
 

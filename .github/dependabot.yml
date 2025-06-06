@@ -1,0 +1,171 @@
+# Dependabot configuration for BotCareU IoT Health Monitoring System
+# Medical-grade dependency management with security-first approach
+
+version: 2
+updates:
+  # Backend Node.js dependencies
+  - package-ecosystem: "npm"
+    directory: "/backend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "Krx-21"
+    assignees:
+      - "Krx-21"
+    labels:
+      - "dependencies"
+      - "backend"
+      - "automated"
+    commit-message:
+      prefix: "🔒 Backend"
+      prefix-development: "🔧 Backend Dev"
+      include: "scope"
+    # Medical-grade security: Only allow patch and minor updates by default
+    # Major updates require manual review for medical compliance
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+    # Allow security updates regardless of version
+    allow:
+      - dependency-type: "all"
+        update-type: "security"
+
+  # Frontend React/TypeScript dependencies
+  - package-ecosystem: "npm"
+    directory: "/frontend/web"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:30"
+      timezone: "UTC"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "Krx-21"
+    assignees:
+      - "Krx-21"
+    labels:
+      - "dependencies"
+      - "frontend"
+      - "automated"
+    commit-message:
+      prefix: "🎨 Frontend"
+      prefix-development: "🔧 Frontend Dev"
+      include: "scope"
+    # Conservative approach for medical UI components
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+      # Be extra careful with UI framework major updates
+      - dependency-name: "react"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "react-dom"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@mui/material"
+        update-types: ["version-update:semver-major"]
+    allow:
+      - dependency-type: "all"
+        update-type: "security"
+
+  # Root project dependencies
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "07:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 3
+    reviewers:
+      - "Krx-21"
+    assignees:
+      - "Krx-21"
+    labels:
+      - "dependencies"
+      - "root"
+      - "automated"
+    commit-message:
+      prefix: "📦 Root"
+      include: "scope"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+    allow:
+      - dependency-type: "all"
+        update-type: "security"
+
+  # Docker base images
+  - package-ecosystem: "docker"
+    directory: "/backend"
+    schedule:
+      interval: "weekly"
+      day: "tuesday"
+      time: "06:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 2
+    reviewers:
+      - "Krx-21"
+    assignees:
+      - "Krx-21"
+    labels:
+      - "dependencies"
+      - "docker"
+      - "backend"
+      - "security"
+    commit-message:
+      prefix: "🐳 Backend Docker"
+      include: "scope"
+
+  - package-ecosystem: "docker"
+    directory: "/frontend/web"
+    schedule:
+      interval: "weekly"
+      day: "tuesday"
+      time: "06:30"
+      timezone: "UTC"
+    open-pull-requests-limit: 2
+    reviewers:
+      - "Krx-21"
+    assignees:
+      - "Krx-21"
+    labels:
+      - "dependencies"
+      - "docker"
+      - "frontend"
+      - "security"
+    commit-message:
+      prefix: "🐳 Frontend Docker"
+      include: "scope"
+
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "wednesday"
+      time: "06:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 3
+    reviewers:
+      - "Krx-21"
+    assignees:
+      - "Krx-21"
+    labels:
+      - "dependencies"
+      - "github-actions"
+      - "ci-cd"
+      - "automated"
+    commit-message:
+      prefix: "🔄 CI/CD"
+      include: "scope"
+
+# Medical-grade dependency management notes:
+# 1. Conservative update strategy to maintain medical compliance
+# 2. Security updates are always allowed regardless of version
+# 3. Major version updates require manual review for medical impact
+# 4. Separate schedules to avoid overwhelming the review process
+# 5. All updates include proper labeling for audit trails
+# 6. Reviewers assigned to ensure medical compliance verification

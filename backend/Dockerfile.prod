@@ -1,0 +1,133 @@
+# Production Dockerfile for BotCareU Backend API
+# Medical-grade IoT health monitoring system
+# Multi-stage build for optimized production image
+
+# =============================================================================
+# BUILD STAGE
+# =============================================================================
+FROM node:18-alpine AS builder
+
+# Set working directory
+WORKDIR /app
+
+# Install build dependencies
+RUN apk add --no-cache \
+    python3 \
+    make \
+    g++ \
+    git \
+    curl
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies (including dev dependencies for build)
+RUN npm ci --include=dev
+
+# Copy source code
+COPY . .
+
+# Build the application
+RUN npm run build
+
+# Remove dev dependencies and install only production dependencies
+RUN npm ci --only=production && npm cache clean --force
+
+# =============================================================================
+# PRODUCTION STAGE
+# =============================================================================
+FROM node:18-alpine AS production
+
+# Set environment variables
+ENV NODE_ENV=production
+ENV PORT=3001
+
+# Create app user for security
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S botcareu -u 1001
+
+# Install runtime dependencies
+RUN apk add --no-cache \
+    curl \
+    dumb-init \
+    tzdata
+
+# Set timezone for medical logging compliance
+ENV TZ=UTC
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+# Create app directory
+WORKDIR /app
+
+# Copy built application from builder stage
+COPY --from=builder --chown=botcareu:nodejs /app/dist ./dist
+COPY --from=builder --chown=botcareu:nodejs /app/node_modules ./node_modules
+COPY --from=builder --chown=botcareu:nodejs /app/package*.json ./
+
+# Copy database migrations and seeds
+COPY --chown=botcareu:nodejs database/ ./database/
+COPY --chown=botcareu:nodejs knexfile.js ./
+
+# Create necessary directories
+RUN mkdir -p logs temp uploads && \
+    chown -R botcareu:nodejs logs temp uploads
+
+# Create health check script
+RUN echo '#!/bin/sh\ncurl -f http://localhost:3001/api/v1/health || exit 1' > /usr/local/bin/healthcheck && \
+    chmod +x /usr/local/bin/healthcheck
+
+# Security: Remove unnecessary packages and files
+RUN apk del --purge \
+    && rm -rf /var/cache/apk/* \
+    && rm -rf /tmp/* \
+    && rm -rf /root/.npm
+
+# Switch to non-root user
+USER botcareu
+
+# Expose port
+EXPOSE 3001
+
+# Health check for medical-grade monitoring
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+    CMD /usr/local/bin/healthcheck
+
+# Add labels for medical compliance and traceability
+LABEL maintainer="Kritchaya Chaowajreun <6733007821@student.chula.ac.th>"
+LABEL version="1.0.0-alpha"
+LABEL description="BotCareU Backend API - Medical-grade IoT health monitoring"
+LABEL medical.grade="true"
+LABEL medical.precision="±0.1°C"
+LABEL compliance.hipaa="true"
+LABEL compliance.fda="software-as-medical-device"
+LABEL security.level="high"
+LABEL build.date="${BUILD_DATE:-unknown}"
+LABEL build.version="${BUILD_VERSION:-unknown}"
+LABEL git.commit="${GIT_COMMIT:-unknown}"
+
+# Use dumb-init for proper signal handling in containers
+ENTRYPOINT ["dumb-init", "--"]
+
+# Start the application
+CMD ["node", "dist/server.js"]
+
+# =============================================================================
+# PRODUCTION OPTIMIZATIONS
+# =============================================================================
+# 1. Multi-stage build reduces final image size
+# 2. Non-root user for security
+# 3. Health checks for container orchestration
+# 4. Proper signal handling with dumb-init
+# 5. Medical compliance labels for audit trails
+# 6. Timezone set for consistent medical logging
+# 7. Security hardening with minimal attack surface
+
+# =============================================================================
+# MEDICAL COMPLIANCE NOTES
+# =============================================================================
+# This Docker image is designed for medical-grade applications:
+# - Consistent timezone for medical data timestamps
+# - Health checks for high availability requirements
+# - Audit trail support through proper logging
+# - Security hardening for patient data protection
+# - Reproducible builds for regulatory compliance

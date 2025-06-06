@@ -1,0 +1,471 @@
+name: 📚 Documentation Deployment
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'docs/**'
+      - 'README.md'
+      - '*.md'
+      - 'backend/src/**/*.js'
+      - 'frontend/web/src/**/*.{ts,tsx}'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'docs/**'
+      - 'README.md'
+      - '*.md'
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: '18'
+
+jobs:
+  # ==========================================
+  # DOCUMENTATION BUILD
+  # ==========================================
+  build-docs:
+    name: 📚 Build Documentation
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: 📦 Install dependencies
+        run: |
+          npm ci
+          cd backend && npm ci
+          cd ../frontend/web && npm ci
+
+      - name: 📚 Install documentation tools
+        run: |
+          npm install -g @apidevtools/swagger-jsdoc swagger-ui-dist
+          npm install -g typedoc
+          npm install -g jsdoc
+
+      - name: 📖 Generate API documentation
+        run: |
+          echo "📖 Generating API documentation..."
+          mkdir -p docs/api
+          
+          # Create JSDoc configuration
+          cat > jsdoc.conf.json << 'EOF'
+          {
+            "source": {
+              "include": ["./backend/src/"],
+              "includePattern": "\\.(js)$",
+              "exclude": ["node_modules/"]
+            },
+            "opts": {
+              "destination": "./docs/api/backend/"
+            },
+            "plugins": ["plugins/markdown"],
+            "templates": {
+              "cleverLinks": false,
+              "monospaceLinks": false
+            }
+          }
+          EOF
+          
+          # Generate backend API docs
+          jsdoc -c jsdoc.conf.json
+
+      - name: 📱 Generate frontend documentation
+        run: |
+          echo "📱 Generating frontend documentation..."
+          cd frontend/web
+          
+          # Create TypeDoc configuration
+          cat > typedoc.json << 'EOF'
+          {
+            "entryPoints": ["src"],
+            "out": "../../docs/api/frontend",
+            "theme": "default",
+            "includeVersion": true,
+            "excludePrivate": true,
+            "excludeProtected": true,
+            "excludeExternals": true,
+            "readme": "README.md",
+            "name": "BotCareU Frontend Documentation"
+          }
+          EOF
+          
+          # Generate frontend docs
+          npx typedoc
+
+      - name: 🏥 Generate medical compliance documentation
+        run: |
+          echo "🏥 Generating medical compliance documentation..."
+          mkdir -p docs/compliance
+          
+          cat > docs/compliance/medical-grade-requirements.md << 'EOF'
+          # Medical Grade Requirements Documentation
+          
+          ## Temperature Measurement Precision
+          
+          ### Requirement
+          - **Precision:** ±0.1°C (Medical Grade)
+          - **Range:** 35.0°C to 42.0°C
+          - **Resolution:** 0.1°C
+          - **Accuracy:** ±0.1°C across full range
+          
+          ### Implementation
+          - Hardware: Medical-grade temperature sensors
+          - Software: Precision validation in data processing
+          - Calibration: Regular calibration procedures
+          
+          ## Data Security & Privacy
+          
+          ### HIPAA Compliance
+          - Encryption at rest and in transit
+          - Access controls and audit logging
+          - Data retention policies
+          - Patient consent management
+          
+          ### FDA Guidelines
+          - Software as Medical Device (SaMD) compliance
+          - Risk management procedures
+          - Quality management system
+          - Clinical evaluation documentation
+          
+          ## Audit Trail Requirements
+          
+          ### Data Access Logging
+          - User authentication events
+          - Data access and modification logs
+          - System configuration changes
+          - Medical device interactions
+          
+          ### Retention Policies
+          - Medical data: 7 years minimum
+          - Audit logs: 7 years minimum
+          - System logs: 1 year minimum
+          - Performance metrics: 1 year minimum
+          EOF
+
+      - name: 🔧 Generate API specification
+        run: |
+          echo "🔧 Generating OpenAPI specification..."
+          mkdir -p docs/api-spec
+          
+          # Create OpenAPI specification
+          cat > docs/api-spec/openapi.yaml << 'EOF'
+          openapi: 3.0.3
+          info:
+            title: BotCareU API
+            description: IoT Health Monitoring System API
+            version: 1.0.0-alpha
+            contact:
+              name: BotCareU Team
+              email: support@botcareu.com
+            license:
+              name: MIT
+              url: https://opensource.org/licenses/MIT
+          
+          servers:
+            - url: https://api.botcareu.com/api/v1
+              description: Production server
+            - url: https://staging-api.botcareu.com/api/v1
+              description: Staging server
+          
+          paths:
+            /health:
+              get:
+                summary: Health check endpoint
+                description: Returns the health status of the API
+                responses:
+                  '200':
+                    description: API is healthy
+                    content:
+                      application/json:
+                        schema:
+                          type: object
+                          properties:
+                            status:
+                              type: string
+                              example: "healthy"
+                            timestamp:
+                              type: string
+                              format: date-time
+          
+            /temperature/reading:
+              post:
+                summary: Submit temperature reading
+                description: Submit a new temperature reading from IoT device
+                requestBody:
+                  required: true
+                  content:
+                    application/json:
+                      schema:
+                        type: object
+                        required:
+                          - deviceId
+                          - temperature
+                          - timestamp
+                        properties:
+                          deviceId:
+                            type: string
+                            description: Unique device identifier
+                          temperature:
+                            type: number
+                            format: float
+                            minimum: 35.0
+                            maximum: 42.0
+                            description: Temperature in Celsius (±0.1°C precision)
+                          timestamp:
+                            type: string
+                            format: date-time
+                            description: Measurement timestamp
+                          precision:
+                            type: number
+                            format: float
+                            example: 0.1
+                            description: Measurement precision
+                responses:
+                  '201':
+                    description: Temperature reading recorded
+                  '400':
+                    description: Invalid input data
+                  '401':
+                    description: Unauthorized
+          
+          components:
+            securitySchemes:
+              bearerAuth:
+                type: http
+                scheme: bearer
+                bearerFormat: JWT
+          
+          security:
+            - bearerAuth: []
+          EOF
+
+      - name: 📊 Generate architecture documentation
+        run: |
+          echo "📊 Generating architecture documentation..."
+          mkdir -p docs/architecture
+          
+          # Copy existing architecture docs and enhance them
+          if [ -f "docs/ARCHITECTURE.md" ]; then
+            cp docs/ARCHITECTURE.md docs/architecture/
+          fi
+          
+          # Generate deployment architecture
+          cat > docs/architecture/deployment.md << 'EOF'
+          # Deployment Architecture
+          
+          ## Production Environment
+          
+          ### Infrastructure Components
+          - **Load Balancer:** Nginx with SSL termination
+          - **Application Servers:** Node.js containers (3 replicas)
+          - **Database:** PostgreSQL cluster with read replicas
+          - **Time-series DB:** InfluxDB for sensor data
+          - **Cache:** Redis cluster
+          - **Message Broker:** MQTT (Mosquitto)
+          - **Monitoring:** Prometheus + Grafana
+          
+          ### Security Layers
+          - **Network:** VPC with private subnets
+          - **Application:** JWT authentication, RBAC
+          - **Data:** Encryption at rest and in transit
+          - **Monitoring:** Security event logging
+          
+          ### Scalability
+          - **Horizontal scaling:** Auto-scaling groups
+          - **Database scaling:** Read replicas, connection pooling
+          - **Cache scaling:** Redis cluster mode
+          - **CDN:** Static asset distribution
+          
+          ## CI/CD Pipeline
+          
+          ### Continuous Integration
+          - Code quality checks and linting
+          - Automated testing (unit, integration, e2e)
+          - Security vulnerability scanning
+          - Medical compliance validation
+          
+          ### Continuous Deployment
+          - Staging environment deployment
+          - Production deployment with blue-green strategy
+          - Automated rollback on failure
+          - Performance monitoring and alerting
+          EOF
+
+      - name: 🏗️ Build documentation site
+        run: |
+          echo "🏗️ Building documentation site..."
+          mkdir -p docs/site
+          
+          # Create index page
+          cat > docs/site/index.html << 'EOF'
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <title>BotCareU Documentation</title>
+              <style>
+                  body { font-family: Arial, sans-serif; margin: 40px; }
+                  .header { background: #2196F3; color: white; padding: 20px; border-radius: 8px; }
+                  .section { margin: 20px 0; padding: 20px; border: 1px solid #ddd; border-radius: 8px; }
+                  .medical-grade { background: #e8f5e8; border-color: #4caf50; }
+                  a { color: #2196F3; text-decoration: none; }
+                  a:hover { text-decoration: underline; }
+              </style>
+          </head>
+          <body>
+              <div class="header">
+                  <h1>🏥 BotCareU Documentation</h1>
+                  <p>IoT Health Monitoring System - Medical Grade Documentation</p>
+              </div>
+              
+              <div class="section medical-grade">
+                  <h2>🏥 Medical Grade Compliance</h2>
+                  <p><strong>Temperature Precision:</strong> ±0.1°C</p>
+                  <p><strong>FDA Compliance:</strong> Software as Medical Device (SaMD)</p>
+                  <p><strong>HIPAA Compliance:</strong> Healthcare data protection</p>
+                  <a href="compliance/medical-grade-requirements.html">View Compliance Documentation</a>
+              </div>
+              
+              <div class="section">
+                  <h2>📖 API Documentation</h2>
+                  <ul>
+                      <li><a href="api/backend/index.html">Backend API Documentation</a></li>
+                      <li><a href="api/frontend/index.html">Frontend Documentation</a></li>
+                      <li><a href="api-spec/openapi.yaml">OpenAPI Specification</a></li>
+                  </ul>
+              </div>
+              
+              <div class="section">
+                  <h2>🏗️ Architecture</h2>
+                  <ul>
+                      <li><a href="architecture/ARCHITECTURE.html">System Architecture</a></li>
+                      <li><a href="architecture/deployment.html">Deployment Architecture</a></li>
+                  </ul>
+              </div>
+              
+              <div class="section">
+                  <h2>🚀 CI/CD</h2>
+                  <p>Automated workflows for medical-grade software development</p>
+                  <ul>
+                      <li>Continuous Integration with compliance checks</li>
+                      <li>Automated testing and security scanning</li>
+                      <li>Medical-grade deployment procedures</li>
+                      <li>Performance monitoring and alerting</li>
+                  </ul>
+              </div>
+              
+              <footer style="margin-top: 40px; text-align: center; color: #666;">
+                  <p>Generated: $(date -u +%Y-%m-%dT%H:%M:%SZ) | Commit: ${{ github.sha }}</p>
+              </footer>
+          </body>
+          </html>
+          EOF
+
+      - name: 📤 Upload documentation artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: documentation-${{ github.sha }}
+          path: docs/
+          retention-days: 90
+
+  # ==========================================
+  # DEPLOY DOCUMENTATION
+  # ==========================================
+  deploy-docs:
+    name: 🚀 Deploy Documentation
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [build-docs]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 📥 Download documentation artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: documentation-${{ github.sha }}
+          path: docs/
+
+      - name: 🚀 Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs/site
+          publish_branch: gh-pages
+          commit_message: |
+            📚 Deploy documentation for ${{ github.sha }}
+
+            - Updated API documentation
+            - Medical compliance docs updated
+            - Architecture documentation refreshed
+
+            Auto-deployed from main branch
+
+      - name: 📊 Generate deployment report
+        run: |
+          cat > docs-deployment-report.md << EOF
+          # Documentation Deployment Report
+
+          **Generated:** $(date -u +%Y-%m-%dT%H:%M:%SZ)
+          **Commit:** ${{ github.sha }}
+          **Deployment ID:** ${{ github.run_id }}
+
+          ## Deployed Documentation
+
+          ### 🌐 Live URLs
+          - **Main Documentation:** https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/
+          - **API Documentation:** https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/api/
+          - **Medical Compliance:** https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/compliance/
+
+          ### 📚 Documentation Sections
+          - ✅ API Documentation (Backend & Frontend)
+          - ✅ Medical Grade Compliance Documentation
+          - ✅ Architecture Documentation
+          - ✅ OpenAPI Specification
+          - ✅ CI/CD Documentation
+
+          ### 🏥 Medical Compliance
+          - ✅ Temperature precision requirements documented
+          - ✅ FDA compliance guidelines included
+          - ✅ HIPAA requirements documented
+          - ✅ Audit trail specifications included
+
+          ### 📊 Metrics
+          - **Build Time:** ${{ job.duration || 'N/A' }}
+          - **Documentation Size:** $(du -sh docs/ | cut -f1)
+          - **Last Updated:** $(date -u +%Y-%m-%dT%H:%M:%SZ)
+
+          ## Next Steps
+          1. Review deployed documentation at the live URLs
+          2. Verify all medical compliance documentation is accurate
+          3. Update any missing or outdated sections
+          4. Notify team of documentation updates
+          EOF
+
+      - name: 📤 Upload deployment report
+        uses: actions/upload-artifact@v4
+        with:
+          name: docs-deployment-report-${{ github.run_id }}
+          path: docs-deployment-report.md
+          retention-days: 30
+
+      - name: 🔔 Notify documentation deployment
+        run: |
+          echo "📚 Documentation deployed successfully!"
+          echo "🌐 Live URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/"
+          echo "📊 Deployment ID: ${{ github.run_id }}"
+          echo "🏥 Medical compliance documentation updated"

@@ -1,0 +1,181 @@
+# CODEOWNERS for BotCareU IoT Health Monitoring System
+# Medical-grade code review requirements and ownership
+
+# =============================================================================
+# GLOBAL OWNERSHIP
+# =============================================================================
+# Default owners for everything in the repository
+# All changes require review from the primary maintainer
+* @Krx-21
+
+# =============================================================================
+# MEDICAL COMPLIANCE & CRITICAL SYSTEMS
+# =============================================================================
+# Medical-grade temperature measurement and critical health monitoring code
+# Requires additional review for medical compliance
+/backend/src/services/temperature* @Krx-21
+/backend/src/controllers/temperature* @Krx-21
+/backend/src/models/temperature* @Krx-21
+/backend/src/utils/medical* @Krx-21
+/firmware/ @Krx-21
+
+# Medical data processing and analytics
+/backend/src/services/analytics* @Krx-21
+/backend/src/services/notification* @Krx-21
+/backend/src/middleware/medical* @Krx-21
+
+# Frontend medical dashboard components
+/frontend/web/src/components/medical/ @Krx-21
+/frontend/web/src/components/temperature/ @Krx-21
+/frontend/web/src/components/dashboard/ @Krx-21
+/frontend/web/src/utils/medical* @Krx-21
+
+# =============================================================================
+# SECURITY & AUTHENTICATION
+# =============================================================================
+# Security-critical code requires thorough review
+/backend/src/middleware/auth* @Krx-21
+/backend/src/middleware/security* @Krx-21
+/backend/src/services/auth* @Krx-21
+/backend/src/utils/encryption* @Krx-21
+/backend/src/utils/security* @Krx-21
+
+# Frontend authentication and security
+/frontend/web/src/contexts/auth* @Krx-21
+/frontend/web/src/hooks/auth* @Krx-21
+/frontend/web/src/utils/auth* @Krx-21
+/frontend/web/src/utils/security* @Krx-21
+
+# =============================================================================
+# DATABASE & DATA MANAGEMENT
+# =============================================================================
+# Database schemas and migrations require careful review
+/backend/database/ @Krx-21
+/backend/src/models/ @Krx-21
+/backend/knexfile.js @Krx-21
+
+# Data retention and compliance
+/backend/src/services/database* @Krx-21
+/backend/src/utils/data-retention* @Krx-21
+
+# =============================================================================
+# CI/CD & INFRASTRUCTURE
+# =============================================================================
+# CI/CD workflows and deployment configurations
+/.github/workflows/ @Krx-21
+/.github/dependabot.yml @Krx-21
+/.github/CODEOWNERS @Krx-21
+
+# Docker and deployment configurations
+/docker-compose*.yml @Krx-21
+/backend/Dockerfile* @Krx-21
+/frontend/web/Dockerfile* @Krx-21
+/nginx/ @Krx-21
+
+# Deployment and infrastructure scripts
+/scripts/ @Krx-21
+/monitoring/ @Krx-21
+
+# =============================================================================
+# CONFIGURATION & ENVIRONMENT
+# =============================================================================
+# Environment and configuration files
+/.env* @Krx-21
+/backend/.env* @Krx-21
+/frontend/web/.env* @Krx-21
+/backend/src/config/ @Krx-21
+
+# Package management and dependencies
+/package.json @Krx-21
+/package-lock.json @Krx-21
+/backend/package.json @Krx-21
+/backend/package-lock.json @Krx-21
+/frontend/web/package.json @Krx-21
+/frontend/web/package-lock.json @Krx-21
+
+# =============================================================================
+# DOCUMENTATION & COMPLIANCE
+# =============================================================================
+# Documentation requires review for accuracy and compliance
+/README.md @Krx-21
+/docs/ @Krx-21
+/CHANGELOG.md @Krx-21
+/LICENSE @Krx-21
+
+# Medical compliance documentation
+/docs/compliance/ @Krx-21
+/docs/medical/ @Krx-21
+/docs/ARCHITECTURE.md @Krx-21
+
+# =============================================================================
+# TESTING & QUALITY ASSURANCE
+# =============================================================================
+# Test configurations and critical test files
+/backend/tests/ @Krx-21
+/frontend/web/src/test/ @Krx-21
+/backend/jest.config.js @Krx-21
+/frontend/web/vitest.config.ts @Krx-21
+
+# Performance and load testing
+/performance-tests/ @Krx-21
+/load-tests/ @Krx-21
+
+# =============================================================================
+# LINTING & CODE QUALITY
+# =============================================================================
+# Code quality and linting configurations
+/.eslintrc* @Krx-21
+/.prettierrc* @Krx-21
+/backend/.eslintrc* @Krx-21
+/frontend/web/.eslintrc* @Krx-21
+/frontend/web/tsconfig.json @Krx-21
+
+# =============================================================================
+# SPECIAL REVIEW REQUIREMENTS
+# =============================================================================
+# Files that require additional scrutiny for medical compliance
+
+# Medical device firmware (requires hardware validation)
+/firmware/src/temperature_sensor* @Krx-21
+/firmware/src/calibration* @Krx-21
+/firmware/config.h @Krx-21
+
+# Critical API endpoints for medical data
+/backend/src/routes/temperature* @Krx-21
+/backend/src/routes/medical* @Krx-21
+/backend/src/routes/device* @Krx-21
+
+# Medical dashboard critical components
+/frontend/web/src/pages/Dashboard* @Krx-21
+/frontend/web/src/components/TemperatureChart* @Krx-21
+/frontend/web/src/components/AlertSystem* @Krx-21
+
+# =============================================================================
+# NOTES FOR REVIEWERS
+# =============================================================================
+# When reviewing code in this repository, please ensure:
+# 
+# 1. Medical Compliance:
+#    - Temperature precision maintained at ±0.1°C
+#    - Medical-grade data handling procedures followed
+#    - Audit trails preserved for all medical data operations
+#
+# 2. Security Requirements:
+#    - No hardcoded secrets or credentials
+#    - Proper encryption for sensitive data
+#    - Authentication and authorization properly implemented
+#
+# 3. Performance Standards:
+#    - Response times meet medical device requirements
+#    - System can handle expected IoT device load
+#    - Database queries optimized for real-time operations
+#
+# 4. Documentation:
+#    - Medical compliance documentation updated
+#    - API documentation reflects changes
+#    - Architecture documentation maintained
+#
+# 5. Testing:
+#    - Medical precision tests included
+#    - Security tests cover new functionality
+#    - Performance tests validate requirements
