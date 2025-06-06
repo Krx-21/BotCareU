@@ -24,7 +24,7 @@ Register a new user account.
   "password": "securePassword123",
   "firstName": "John",
   "lastName": "Doe",
-  "dateOfBirth": "1990-01-01",
+  "dateOfBirth": "YYYY-MM-DD",
   "gender": "male",
   "role": "patient"
 }
@@ -112,7 +112,7 @@ Get current user profile.
     "email": "user@example.com",
     "firstName": "John",
     "lastName": "Doe",
-    "dateOfBirth": "1990-01-01",
+    "dateOfBirth": "YYYY-MM-DD",
     "gender": "male",
     "role": "patient",
     "preferences": {
@@ -120,8 +120,8 @@ Get current user profile.
       "feverThreshold": 37.5,
       "notificationsEnabled": true
     },
-    "createdAt": "2024-01-01T00:00:00Z",
-    "updatedAt": "2024-01-01T00:00:00Z"
+    "createdAt": "YYYY-MM-DDTHH:mm:ssZ",
+    "updatedAt": "YYYY-MM-DDTHH:mm:ssZ"
   }
 }
 ```
@@ -163,7 +163,7 @@ Get all devices associated with the current user.
       "status": "online",
       "batteryLevel": 85,
       "signalStrength": -45,
-      "lastSeen": "2024-01-01T12:00:00Z",
+      "lastSeen": "YYYY-MM-DDTHH:mm:ssZ",
       "firmwareVersion": "1.0.0",
       "settings": {
         "measurementInterval": 60000,
@@ -238,7 +238,7 @@ Get temperature readings with optional filtering.
         "contactTemp": 36.9,
         "ambientTemp": 22.5,
         "measurementType": "infrared",
-        "timestamp": "2024-01-01T12:00:00Z",
+        "timestamp": "YYYY-MM-DDTHH:mm:ssZ",
         "isValid": true,
         "feverDetected": false
       }
@@ -266,7 +266,7 @@ Submit new temperature reading (typically from IoT device).
   "contactTemp": 36.9,
   "ambientTemp": 22.5,
   "measurementType": "infrared",
-  "timestamp": "2024-01-01T12:00:00Z"
+  "timestamp": "YYYY-MM-DDTHH:mm:ssZ"
 }
 ```
 
@@ -295,7 +295,7 @@ Get temperature analytics and trends.
     },
     "trends": [
       {
-        "date": "2024-01-01",
+        "date": "YYYY-MM-DD",
         "averageTemp": 36.8,
         "minTemp": 36.2,
         "maxTemp": 37.1,
@@ -342,7 +342,7 @@ Get user notifications.
           "readingId": "reading_uuid"
         },
         "isRead": false,
-        "createdAt": "2024-01-01T12:00:00Z"
+        "createdAt": "YYYY-MM-DDTHH:mm:ssZ"
       }
     ],
     "unreadCount": 3
@@ -382,7 +382,7 @@ Get API health status.
   "success": true,
   "data": {
     "status": "healthy",
-    "timestamp": "2024-01-01T12:00:00Z",
+    "timestamp": "YYYY-MM-DDTHH:mm:ssZ",
     "version": "1.0.0-alpha",
     "services": {
       "database": "healthy",
@@ -419,7 +419,7 @@ Real-time temperature reading updates.
   "data": {
     "deviceId": "BotCareU_ABC123",
     "temperature": 36.8,
-    "timestamp": "2024-01-01T12:00:00Z"
+    "timestamp": "YYYY-MM-DDTHH:mm:ssZ"
   }
 }
 ```
@@ -433,7 +433,7 @@ Fever detection alerts.
     "deviceId": "BotCareU_ABC123",
     "temperature": 38.2,
     "severity": "moderate",
-    "timestamp": "2024-01-01T12:00:00Z"
+    "timestamp": "YYYY-MM-DDTHH:mm:ssZ"
   }
 }
 ```
@@ -447,7 +447,7 @@ Device status updates.
     "deviceId": "BotCareU_ABC123",
     "status": "online",
     "batteryLevel": 85,
-    "timestamp": "2024-01-01T12:00:00Z"
+    "timestamp": "YYYY-MM-DDTHH:mm:ssZ"
   }
 }
 ```
