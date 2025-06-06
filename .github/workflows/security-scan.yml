@@ -30,6 +30,9 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
+          cache-dependency-path: |
+            backend/package-lock.json
+            frontend/web/package-lock.json
 
       - name: 📦 Install dependencies
         run: |

@@ -555,6 +555,47 @@ Deploy: Manual approval required
 
 ### 📦 Dependency Management
 
+BotCareU uses npm as the primary package manager with a multi-package workspace structure. The project maintains strict dependency management practices for medical-grade software reliability.
+
+#### Package Structure
+```bash
+# Root workspace package.json
+package.json                    # Workspace scripts and dev dependencies
+package-lock.json              # Root dependency lock file
+
+# Backend API package
+backend/package.json           # Backend dependencies
+backend/package-lock.json      # Backend lock file
+
+# Frontend Web Dashboard
+frontend/web/package.json      # Web app dependencies
+frontend/web/package-lock.json # Web app lock file
+
+# Mobile Application
+frontend/mobile/package.json   # Mobile app dependencies
+```
+
+#### Installation Commands
+```bash
+# Install all dependencies (recommended)
+npm run setup
+
+# Install individual packages
+npm run setup:backend         # Backend dependencies only
+npm run setup:frontend        # Web frontend dependencies only
+npm run setup:mobile          # Mobile app dependencies only
+
+# Manual installation
+cd backend && npm install     # Backend manual install
+cd frontend/web && npm install # Frontend manual install
+```
+
+#### Lock File Management
+- **Lock files are committed**: All `package-lock.json` files are version controlled
+- **Consistent installations**: Use `npm ci` in production and CI/CD
+- **Security updates**: Regular automated security updates via Dependabot
+- **Medical-grade stability**: Conservative update strategy for critical dependencies
+
 #### Automated Updates
 - **Dependabot**: Automated dependency updates with security focus
 - **Weekly Schedules**: Staggered updates to prevent conflicts
@@ -569,6 +610,20 @@ ignore:
 allow:
   - dependency-type: "all"
     update-type: "security"
+```
+
+#### CI/CD Dependency Caching
+```yaml
+# GitHub Actions npm caching configuration
+- name: Setup Node.js
+  uses: actions/setup-node@v4
+  with:
+    node-version: '18'
+    cache: 'npm'
+    cache-dependency-path: |
+      package-lock.json
+      backend/package-lock.json
+      frontend/web/package-lock.json
 ```
 
 ### 📊 Performance Monitoring

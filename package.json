@@ -27,7 +27,9 @@
     "frontend:lint": "cd frontend/web && npm run lint",
     "format": "npm run backend:format && npm run frontend:format",
     "backend:format": "cd backend && npm run format",
-    "frontend:format": "cd frontend/web && npm run format"
+    "frontend:format": "cd frontend/web && npm run format",
+    "verify-ci": "node scripts/test-ci-setup.js",
+    "verify-implementation": "node scripts/verify-implementation.js"
   },
   "keywords": [
     "iot",
