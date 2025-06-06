@@ -29,7 +29,7 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: config.cors.origin,
+    origin: config.security.corsOrigin,
     methods: ['GET', 'POST'],
     credentials: true
   }
@@ -51,7 +51,7 @@ app.use(helmet({
 // Rate limiting
 const limiter = rateLimit({
   windowMs: config.security.rateLimitWindowMs,
-  max: config.security.rateLimitMaxRequests,
+  max: config.security.rateLimitMax,
   message: {
     error: 'Too many requests from this IP, please try again later.'
   }
@@ -60,7 +60,7 @@ app.use('/api/', limiter);
 
 // CORS configuration
 app.use(cors({
-  origin: config.cors.origin,
+  origin: config.security.corsOrigin,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
@@ -68,8 +68,8 @@ app.use(cors({
 
 // Body parsing middleware
 app.use(compression());
-app.use(express.json({ limit: config.api.maxRequestSize }));
-app.use(express.urlencoded({ extended: true, limit: config.api.maxRequestSize }));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Logging middleware
 app.use(morgan('combined', {
@@ -80,7 +80,7 @@ app.use(morgan('combined', {
 
 // Request timeout
 app.use((req, res, next) => {
-  req.setTimeout(config.api.requestTimeout);
+  req.setTimeout(30000); // 30 seconds
   next();
 });
 
